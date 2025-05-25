@@ -15,11 +15,4 @@ connection.once("open", () => {
 const app = express();
 routes(app)
 
-app.delete("/games/:id", (req, res) => {
-    const index = getGameById(req.params.id);
-    games.splice(index, 1);
-    res.status(204).send("Game Deleted");
-
-})
-
 export default app;
