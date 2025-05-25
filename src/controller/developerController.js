@@ -48,6 +48,6 @@ class DevelopersController {
             res.status(500).json({message: `${error} could not be deleted`});
         }
     };
-};
+}
 
 export default DevelopersController;

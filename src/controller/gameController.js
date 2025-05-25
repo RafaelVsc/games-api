@@ -91,6 +91,6 @@ class GamesController {
             res.status(500).json({ message: `Erro ao buscar jogos: ${error.message}` });
         }
     };
-};
+}
 
 export default GamesController;

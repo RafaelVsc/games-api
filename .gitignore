@@ -21,7 +21,6 @@ logs/
 # Docker volumes e arquivos de runtime
 docker-compose.override.yml
 mongo/init.js # se quiser que o seed não seja versionado (opcional)
-*.pid
 *.seed.*
 *.db
 
