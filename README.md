@@ -96,6 +96,11 @@ docker compose up -d --build
 ## ☁️ GitHub Codespaces
 
 Esse projeto é compatível com Codespaces. Para habilitar:
+O codespaces por padrão já vem configurado com nvm, python, docker etc... 
+execute os seguintes comandos 
+`make start`
+
+![alt text](example.png)
 
 1. Crie a pasta `.devcontainer/`
 2. Adicione:
