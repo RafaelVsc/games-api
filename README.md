@@ -31,20 +31,20 @@ Uma API RESTful para gerenciamento de jogos, desenvolvida com **Node.js + Expres
 ### 1. Clone o projeto
 
 ```bash
-git clone https://github.com/seu-usuario/games-api.git
-cd games-api
+   git clone https://github.com/seu-usuario/games-api.git
+   cd games-api
 ```
 
 ### 2. Copie o arquivo `.env`
 
 ```bash
-cp .env.example .env
+  cp .env.example .env
 ```
 
 ### 3. Suba os containers
 
 ```bash
-docker compose up -d
+  docker compose up -d
 ```
 
 > A API será acessível em `http://localhost:3000`
@@ -87,20 +87,46 @@ docker compose up -d
 Caso queira popular o banco com dados de exemplo, edite `mongo/init.js` e reinicie com:
 
 ```bash
-docker compose down -v
-docker compose up -d --build
+   docker compose down -v
+   docker compose up -d --build
 ```
 
 ---
 
 ## ☁️ GitHub Codespaces
 
-Esse projeto é compatível com Codespaces. Para habilitar:
+Esse projeto é compatível com Codespaces. Para utilizá-lo:
+1. **Faça um fork deste repositório** para sua conta
+2. No seu `fork` clique em **Code** e selecione a aba **Codespaces**
+3. Clique em **Create codespace on main** para iniciar um novo codespace.
+
 O codespaces por padrão já vem configurado com nvm, python, docker etc... 
 execute os seguintes comandos 
-`make start`
+1. Iniciar o MongoDB do docker-compose.yml
+```bash
+  make start 
+```
+
+2. Alterar versão do node (baseado no arquivo .nvmrc)
+```bash
+  nvm use 
+```
+
+3. Start no serviço
+
+```bash
+   npm start
+```
+Para mais comandos consulte o arquivo `Makefile`
+
+Assim que subir o serviço note que ao lado de `TERMINAL` a guia PORTAS mostrará algumas notificações,
+nessa guia será possível visualizar o host e as portas de cada serviço (api, mongodb e mongoexpress)
 
 ![alt text](example.png)
+
+---
+## ☁️ Fix Codespaces
+Caso tenha algum problema ao executar no codespaces, tente os passos abaixo:
 
 1. Crie a pasta `.devcontainer/`
 2. Adicione:
