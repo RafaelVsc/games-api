@@ -1,17 +1,16 @@
 import { developer } from "../models/Developer.js";
-import mongoose from "mongoose";
 
 class DevelopersController {
-  static async getDevelopers(req, res) {
+  static async getDevelopers(req, res, next) {
     try {
       const developersList = await developer.find({});
       res.status(200).json(developersList);
     } catch (error) {
-      res.status(500).json({ message: `${error} could not be found` });
+      next(error);
     }
   }
 
-  static async getDeveloperById(req, res) {
+  static async getDeveloperById(req, res, next) {
     try {
       const id = req.params.id;
       const foundedDeveloper = await developer.findById(id);
@@ -21,42 +20,38 @@ class DevelopersController {
         res.status(404).json({ message: `Developer id ${id} not found` });
       }
     } catch (error) {
-      if (error instanceof mongoose.Error.CastError) {
-        res.status(400).send({ message: "One or more data is incorrect" });
-      } else {
-        res.status(500).json({ message: `Internal Server Error ${error}` });
-      }
+      next(error);
     }
   }
 
-  static async postDeveloper(req, res) {
+  static async postDeveloper(req, res, next) {
     try {
       const newDeveloper = await developer.create(req.body);
       res
         .status(201)
         .json({ message: "Developer Created", game: newDeveloper });
     } catch (error) {
-      res.status(500).json({ message: `${error} could not be created` });
+      next(error);
     }
   }
 
-  static async putDeveloper(req, res) {
+  static async putDeveloper(req, res, next) {
     try {
       const id = req.params.id;
       await developer.findByIdAndUpdate(id, req.body);
       res.status(200).json({ message: "Developer Updated" });
     } catch (error) {
-      res.status(500).json({ message: `${error} could not be updated` });
+      next(error);
     }
   }
 
-  static async deleteDeveloper(req, res) {
+  static async deleteDeveloper(req, res, next) {
     try {
       const id = req.params.id;
       await developer.findOneAndDelete(id);
       res.status(204).json({ message: "Developer deleted successfully" });
     } catch (error) {
-      res.status(500).json({ message: `${error} could not be deleted` });
+      next(error);
     }
   }
 }
