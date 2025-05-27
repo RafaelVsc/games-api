@@ -1,11 +1,14 @@
 import mongoose from "mongoose";
 
-const developerSchema = new mongoose.Schema({
+const developerSchema = new mongoose.Schema(
+  {
     id: { type: mongoose.Schema.Types.ObjectId },
-    name: { type: String, required: true },
-    country: { type: String }
-}, { versionKey: false });
+    name: { type: String, required: [true, "Name is required"] },
+    country: { type: String },
+  },
+  { versionKey: false },
+);
 
 const developer = mongoose.model("Developer", developerSchema, "developers");
 
-export {developer, developerSchema};
+export { developer, developerSchema };
