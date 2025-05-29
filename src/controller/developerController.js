@@ -1,4 +1,5 @@
 import { developer } from "../models/Developer.js";
+import NotFoundRequest from "../errors/NotFoundRequest.js";
 
 class DevelopersController {
   static async getDevelopers(req, res, next) {
@@ -13,12 +14,12 @@ class DevelopersController {
   static async getDeveloperById(req, res, next) {
     try {
       const id = req.params.id;
-      const foundedDeveloper = await developer.findById(id);
-      if (foundedDeveloper != null) {
-        res.status(200).json(foundedDeveloper);
-      } else {
-        res.status(404).json({ message: `Developer id ${id} not found` });
+      const developerFound = await developer.findById(id);
+
+      if (!developerFound) {
+        return next(new NotFoundRequest(`Developer with ID ${id} not found.`));
       }
+      return res.status(200).json(developerFound);
     } catch (error) {
       next(error);
     }
@@ -29,7 +30,7 @@ class DevelopersController {
       const newDeveloper = await developer.create(req.body);
       res
         .status(201)
-        .json({ message: "Developer Created", game: newDeveloper });
+        .json({ message: "Developer created", developer: newDeveloper });
     } catch (error) {
       next(error);
     }
@@ -38,8 +39,19 @@ class DevelopersController {
   static async putDeveloper(req, res, next) {
     try {
       const id = req.params.id;
-      await developer.findByIdAndUpdate(id, req.body);
-      res.status(200).json({ message: "Developer Updated" });
+      const updatedDeveloper = await developer.findByIdAndUpdate(id, req.body, {
+        new: true,
+        runValidators: true,
+      });
+
+      if (!updatedDeveloper) {
+        return next(new NotFoundRequest("Developer Id Not Found"));
+      }
+
+      res.status(200).json({
+        message: "Developer updated successfully",
+        developer: updatedDeveloper,
+      });
     } catch (error) {
       next(error);
     }
@@ -48,8 +60,12 @@ class DevelopersController {
   static async deleteDeveloper(req, res, next) {
     try {
       const id = req.params.id;
-      await developer.findOneAndDelete(id);
-      res.status(204).json({ message: "Developer deleted successfully" });
+      const deletedDeveloper = await developer.findByIdAndDelete(id);
+
+      if (!deletedDeveloper) {
+        return next(new NotFoundRequest("Developer with ID not found"));
+      }
+      return res.status(204).send();
     } catch (error) {
       next(error);
     }

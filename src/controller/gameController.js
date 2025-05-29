@@ -1,5 +1,6 @@
 import game from "../models/Game.js";
 import { developer } from "../models/Developer.js";
+import NotFoundRequest from "../errors/NotFoundRequest.js";
 
 class GamesController {
   static async getGames(req, res, next) {
@@ -13,9 +14,14 @@ class GamesController {
 
   static async getGameById(req, res, next) {
     try {
-      const id = req.params.id;
-      const foundedGame = await game.findById(id).populate("developer");
-      res.status(200).json(foundedGame);
+      const { id } = req.params;
+      const foundGame = await game.findById(id).populate("developer").exec();
+
+      if (!foundGame) {
+        return next(new NotFoundRequest(`Game with ID ${id} not found`));
+      }
+
+      return res.status(200).json(foundGame);
     } catch (error) {
       next(error);
     }
@@ -24,15 +30,16 @@ class GamesController {
   static async postGame(req, res, next) {
     try {
       const newGame = req.body;
-      const foundedDeveloper = await developer.findById(newGame.developer);
+      const foundDeveloper = await developer.findById(newGame.developer);
 
-      if (!foundedDeveloper) {
+      if (!foundDeveloper) {
         return res.status(404).json({ message: "Developer not found" });
       }
 
       const insertedGame = await game.create(newGame);
-
-      res.status(201).json({ message: "Game Created", game: insertedGame });
+      return res
+        .status(201)
+        .json({ message: "Game Created", game: insertedGame });
     } catch (error) {
       next(error);
     }
@@ -40,12 +47,20 @@ class GamesController {
 
   static async putGame(req, res, next) {
     try {
-      const id = req.params.id;
+      const { id } = req.params;
       // mongoose method
       const updatedGame = await game.findByIdAndUpdate(id, req.body, {
         new: true,
+        runValidators: true,
       });
-      res.status(200).json({ message: "Game Updated", game: updatedGame });
+
+      if (!updatedGame) {
+        return next(new NotFoundRequest(`Game with ID ${id} not found`));
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Game Updated", game: updatedGame });
     } catch (error) {
       next(error);
     }
@@ -53,9 +68,12 @@ class GamesController {
 
   static async deleteGame(req, res, next) {
     try {
-      const id = req.params.id;
-      await game.findByIdAndDelete(id);
-      res.status(204).json({ message: "Game Deleted", game: game });
+      const { id } = req.params;
+      const deletedGame = await game.findByIdAndDelete(id);
+      if (!deletedGame) {
+        return next(new NotFoundRequest(`Game with ID ${id} not found`));
+      }
+      return res.status(204).send();
     } catch (error) {
       next(error);
     }
@@ -72,7 +90,7 @@ class GamesController {
         });
 
         if (!foundDeveloper) {
-          return res.status(404).json({ message: "Developer não encontrado" });
+          return res.status(404).json({ message: "Developer not found" });
         }
 
         filter["developer"] = foundDeveloper._id;
@@ -91,7 +109,7 @@ class GamesController {
     } catch (error) {
       res
         .status(500)
-        .json({ message: `Erro ao buscar jogos: ${error.message}` });
+        .json({ message: `Error retrieving games: ${error.message}` });
     }
   }
 }
