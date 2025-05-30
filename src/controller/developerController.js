@@ -1,4 +1,4 @@
-import { developer } from "../models/Developer.js";
+import { developer } from "../models/index.js";
 import NotFoundRequest from "../errors/NotFoundRequest.js";
 
 class DevelopersController {

@@ -1,4 +1,4 @@
-import game from "../models/Game.js";
+import { game } from "../models/index.js";
 import { developer } from "../models/Developer.js";
 import NotFoundRequest from "../errors/NotFoundRequest.js";
 
