@@ -13,7 +13,7 @@ class DevelopersController {
 
   static async getDeveloperById(req, res, next) {
     try {
-      const id = req.params.id;
+      const { id } = req.params;
       const developerFound = await developer.findById(id);
 
       if (!developerFound) {
@@ -38,7 +38,7 @@ class DevelopersController {
 
   static async putDeveloper(req, res, next) {
     try {
-      const id = req.params.id;
+      const { id } = req.params;
       const updatedDeveloper = await developer.findByIdAndUpdate(id, req.body, {
         new: true,
         runValidators: true,
@@ -59,7 +59,7 @@ class DevelopersController {
 
   static async deleteDeveloper(req, res, next) {
     try {
-      const id = req.params.id;
+      const { id } = req.params;
       const deletedDeveloper = await developer.findByIdAndDelete(id);
 
       if (!deletedDeveloper) {
