@@ -5,8 +5,13 @@ import NotFoundRequest from "../errors/NotFoundRequest.js";
 class GamesController {
   static async getGames(req, res, next) {
     try {
-      const gamesList = await game.find().populate("developer");
-      res.status(200).json(gamesList);
+      const gamesQuery = game.find();
+
+      req.result = gamesQuery;
+
+      req.allowedSortFields = ["_id", "title", "releaseYear"];
+
+      next();
     } catch (error) {
       next(error);
     }
@@ -15,7 +20,9 @@ class GamesController {
   static async getGameById(req, res, next) {
     try {
       const { id } = req.params;
-      const foundGame = await game.findById(id).populate("developer").exec();
+      const foundGame = await game
+        .findById(id, {}, { autopopulate: false })
+        .populate("developer");
 
       if (!foundGame) {
         return next(new NotFoundRequest(`Game with ID ${id} not found`));
@@ -79,8 +86,16 @@ class GamesController {
     }
   }
 
-  static async getGamesByQuery(req, res) {
-    const { developer: developerName, platform, title } = req.query;
+  static async getGamesByQuery(req, res, next) {
+    const {
+      developer: developerName,
+      platform,
+      title,
+      minHours,
+      maxHours,
+      fromReleaseYear,
+      toReleaseYear,
+    } = req.query;
     const filter = {};
 
     try {
@@ -104,12 +119,25 @@ class GamesController {
         filter["title"] = { $regex: new RegExp(title, "i") };
       }
 
-      const filteredGames = await game.find(filter).populate("developer");
-      res.status(200).json(filteredGames);
+      if (minHours || maxHours) {
+        filter["durationHours"] = {};
+        if (minHours) filter["durationHours"].$gte = Number(minHours);
+        if (maxHours) filter["durationHours"].$lte = Number(maxHours);
+      }
+
+      if (fromReleaseYear || toReleaseYear) {
+        filter["releaseYear"] = {};
+        if (fromReleaseYear)
+          filter["releaseYear"].$gte = Number(fromReleaseYear);
+        if (toReleaseYear) filter["releaseYear"].$lte = Number(toReleaseYear);
+      }
+
+      const query = game.find(filter);
+      req.result = query;
+      req.allowedSortFields = ["_id", "title", "releaseYear"];
+      return next();
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: `Error retrieving games: ${error.message}` });
+      next(error);
     }
   }
 }

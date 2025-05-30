@@ -4,8 +4,10 @@ import NotFoundRequest from "../errors/NotFoundRequest.js";
 class DevelopersController {
   static async getDevelopers(req, res, next) {
     try {
-      const developersList = await developer.find({});
-      res.status(200).json(developersList);
+      const developerQuery = developer.find();
+      req.result = developerQuery;
+      req.allowedSortFields = ["_id", "name", "country"];
+      next();
     } catch (error) {
       next(error);
     }

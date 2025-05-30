@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import autopopulate from "mongoose-autopopulate";
 
 const gameSchema = new mongoose.Schema(
   {
@@ -30,8 +31,6 @@ const gameSchema = new mongoose.Schema(
     },
     durationHours: {
       type: Number,
-      // min: [1, "Minimum duration must be at least 1 hour"],
-      // max: [100, "Maximum duration cannot exceed 100 hours"],
       validate: {
         validator: (value) => {
           return value >= 1 && value <= 100;
@@ -43,10 +42,13 @@ const gameSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Developer",
       required: [true, "Developer is required"],
+      autopopulate: { select: "name -_id" },
     },
   },
   { versionKey: false },
 );
+
+gameSchema.plugin(autopopulate);
 
 const Game = mongoose.model("Game", gameSchema, "games");
 
