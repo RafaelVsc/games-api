@@ -79,8 +79,16 @@ class GamesController {
     }
   }
 
-  static async getGamesByQuery(req, res) {
-    const { developer: developerName, platform, title } = req.query;
+  static async getGamesByQuery(req, res, next) {
+    const {
+      developer: developerName,
+      platform,
+      title,
+      minHours,
+      maxHours,
+      fromReleaseYear,
+      toReleaseYear,
+    } = req.query;
     const filter = {};
 
     try {
@@ -104,12 +112,23 @@ class GamesController {
         filter["title"] = { $regex: new RegExp(title, "i") };
       }
 
+      if (minHours || maxHours) {
+        filter["durationHours"] = {};
+        if (minHours) filter["durationHours"].$gte = Number(minHours);
+        if (maxHours) filter["durationHours"].$lte = Number(maxHours);
+      }
+
+      if (fromReleaseYear || toReleaseYear) {
+        filter["releaseYear"] = {};
+        if (fromReleaseYear)
+          filter["releaseYear"].$gte = Number(fromReleaseYear);
+        if (toReleaseYear) filter["releaseYear"].$lte = Number(toReleaseYear);
+      }
+
       const filteredGames = await game.find(filter).populate("developer");
-      res.status(200).json(filteredGames);
+      return res.status(200).json(filteredGames);
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: `Error retrieving games: ${error.message}` });
+      next(error);
     }
   }
 }
