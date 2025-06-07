@@ -65,7 +65,9 @@ class DevelopersController {
       const deletedDeveloper = await developer.findByIdAndDelete(id);
 
       if (!deletedDeveloper) {
-        return next(new NotFoundRequest("Developer with ID not found"));
+        return next(
+          new NotFoundRequest(`Developer with ID ${id} not found`)
+        );
       }
       return res.status(204).send();
     } catch (error) {

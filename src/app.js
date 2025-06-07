@@ -17,7 +17,7 @@ connection.once("open", () => {
 const app = express();
 
 app.get("/games", (req, res, next) => {
-  console.log("Middleware registrado no GET da rota /livros");
+  console.log("Middleware registrado no GET da rota /games");
   next();
 });
 
